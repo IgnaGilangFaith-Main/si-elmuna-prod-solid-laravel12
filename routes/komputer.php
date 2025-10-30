@@ -1,14 +1,13 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\KomputerController;
-
+use Illuminate\Support\Facades\Route;
 
 // ==================== KOMPUTER ====================
 Route::get('/daftar_komputer', [KomputerController::class, 'create']);
 Route::post('/tambah-komputer', [KomputerController::class, 'store']);
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified', 'blocked'])->group(function () {
     // Data utama
     Route::get('/data_komputer', [KomputerController::class, 'index']);
     Route::get('/data_komputer/filter', [KomputerController::class, 'filterData']);

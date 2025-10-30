@@ -1,10 +1,10 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SertifikatPublicSpeakingController;
+use Illuminate\Support\Facades\Route;
 
 // ==================== SERTIFIKAT PUBLIC SPEAKING ====================
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified', 'blocked'])->group(function () {
     Route::get('/sertifikat/public-speaking', [SertifikatPublicSpeakingController::class, 'index']);
     Route::get('/sertifikat/tambah/public-speaking/{id}', [SertifikatPublicSpeakingController::class, 'create']);
     Route::post('/tambah-sertifikat/public-speaking', [SertifikatPublicSpeakingController::class, 'store']);

@@ -1,14 +1,13 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BahasaInggrisController;
-
+use Illuminate\Support\Facades\Route;
 
 // ==================== BAHASA INGGRIS ====================
 Route::get('/daftar_bahasa_inggris', [BahasaInggrisController::class, 'create']);
 Route::post('/tambah-bahasa_inggris', [BahasaInggrisController::class, 'store']);
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified', 'blocked'])->group(function () {
     // Data utama
     Route::get('/data_bahasa_inggris', [BahasaInggrisController::class, 'index']);
     Route::get('/data_bahasa_inggris/filter', [BahasaInggrisController::class, 'filterData']);

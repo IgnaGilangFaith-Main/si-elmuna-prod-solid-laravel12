@@ -1,11 +1,10 @@
-<?php 
+<?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SertifikatDesainGrafisController;
-
+use Illuminate\Support\Facades\Route;
 
 // ==================== SERTIFIKAT DESAIN GRAFIS ====================
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified', 'blocked'])->group(function () {
     Route::get('/sertifikat/desain-grafis', [SertifikatDesainGrafisController::class, 'index']);
     Route::get('/sertifikat/tambah/desain-grafis/{id}', [SertifikatDesainGrafisController::class, 'create']);
     Route::post('/tambah-sertifikat/desain-grafis', [SertifikatDesainGrafisController::class, 'store']);

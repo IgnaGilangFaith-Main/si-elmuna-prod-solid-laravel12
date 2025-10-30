@@ -1,11 +1,10 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SertifikatKomputerController;
-
+use Illuminate\Support\Facades\Route;
 
 // ==================== SERTIFIKAT KOMPUTER ====================
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified', 'blocked'])->group(function () {
     Route::get('/sertifikat/komputer', [SertifikatKomputerController::class, 'index']);
     Route::get('/sertifikat/tambah/komputer/{id}', [SertifikatKomputerController::class, 'create']);
     Route::post('/tambah-sertifikat/komputer', [SertifikatKomputerController::class, 'store']);

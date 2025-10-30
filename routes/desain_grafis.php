@@ -1,14 +1,13 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DesainGrafisController;
-
+use Illuminate\Support\Facades\Route;
 
 // ==================== DESAIN GRAFIS ====================
 Route::get('/daftar_desain_grafis', [DesainGrafisController::class, 'create']);
 Route::post('/tambah-desain_grafis', [DesainGrafisController::class, 'store']);
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified', 'blocked'])->group(function () {
     // Data utama
     Route::get('/data_desain_grafis', [DesainGrafisController::class, 'index']);
     Route::get('/data_desain_grafis/filter', [DesainGrafisController::class, 'filterData']);

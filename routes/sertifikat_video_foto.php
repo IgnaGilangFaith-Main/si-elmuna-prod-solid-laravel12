@@ -1,11 +1,10 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SertifikatVideoFotoController;
-
+use Illuminate\Support\Facades\Route;
 
 // ==================== SERTIFIKAT VIDEO EDITING & FOTOGRAFI ====================
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified', 'blocked'])->group(function () {
     Route::get('/sertifikat/video-editing-fotografi', [SertifikatVideoFotoController::class, 'index']);
     Route::get('/sertifikat/tambah/video-editing-fotografi/{id}', [SertifikatVideoFotoController::class, 'create']);
     Route::post('/tambah-sertifikat/video-editing-fotografi', [SertifikatVideoFotoController::class, 'store']);

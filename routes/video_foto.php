@@ -1,14 +1,13 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\VideoFotoController;
-
+use Illuminate\Support\Facades\Route;
 
 // ==================== VIDEO EDITING & FOTOGRAFI ====================
 Route::get('/daftar_video_editing_fotografi', [VideoFotoController::class, 'create']);
 Route::post('/tambah-video_editing_fotografi', [VideoFotoController::class, 'store']);
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified', 'blocked'])->group(function () {
     // Data utama
     Route::get('/data_video_editing_fotografi', [VideoFotoController::class, 'index']);
     Route::get('/data_video_editing_fotografi/filter', [VideoFotoController::class, 'filterData']);

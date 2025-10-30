@@ -59,17 +59,22 @@
                             </td>
                             @can('admin-user')
                                 <td>
-                                    <a href="{{ url('/user/' . $value->id . '/toggle-block') }}">
-                                        @if ($value->blocked_at != null)
-                                            <h4>
-                                                <span class="badge bg-danger">IYA</span>
-                                            </h4>
-                                        @else
-                                            <h4>
-                                                <span class="badge bg-success">TIDAK</span>
-                                            </h4>
-                                        @endif
-                                    </a>
+                                    <form action="{{ url('/user/' . $value->id . '/toggle-block') }}" method="POST"
+                                        style="display: inline;">
+                                        @csrf
+                                        <button type="submit"
+                                            style="background: none; border: none; padding: 0; cursor: pointer;">
+                                            @if ($value->blocked_at != null)
+                                                <h4>
+                                                    <span class="badge bg-danger">IYA</span>
+                                                </h4>
+                                            @else
+                                                <h4>
+                                                    <span class="badge bg-success">TIDAK</span>
+                                                </h4>
+                                            @endif
+                                        </button>
+                                    </form>
                                 </td>
                             @endcan
                             <td>

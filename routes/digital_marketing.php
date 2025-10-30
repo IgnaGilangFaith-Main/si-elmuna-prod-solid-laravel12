@@ -1,14 +1,13 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DigitalMarketingController;
-
+use Illuminate\Support\Facades\Route;
 
 // ==================== DIGITAL MARKETING ====================
 Route::get('/daftar_digital_marketing', [DigitalMarketingController::class, 'create']);
 Route::post('/tambah-digital_marketing', [DigitalMarketingController::class, 'store']);
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified', 'blocked'])->group(function () {
     // Data utama
     Route::get('/data_digital_marketing', [DigitalMarketingController::class, 'index']);
     Route::get('/data_digital_marketing/filter', [DigitalMarketingController::class, 'filterData']);

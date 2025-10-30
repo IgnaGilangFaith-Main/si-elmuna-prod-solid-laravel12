@@ -1,11 +1,10 @@
-<?php 
+<?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PresensiController;
-
+use Illuminate\Support\Facades\Route;
 
 // ==================== PRESENSI ====================
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified', 'blocked'])->group(function () {
     Route::get('/presensi', [PresensiController::class, 'index']);
     Route::get('scan/{id}', [PresensiController::class, 'scan']);
     Route::get('/presensi/hapus/{id}', [PresensiController::class, 'destroy']);

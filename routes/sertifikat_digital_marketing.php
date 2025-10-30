@@ -1,11 +1,10 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SertifikatDigitalMarketingController;
-
+use Illuminate\Support\Facades\Route;
 
 // ==================== SERTIFIKAT DIGITAL MARKETING ====================
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified', 'blocked'])->group(function () {
     Route::get('/sertifikat/digital-marketing', [SertifikatDigitalMarketingController::class, 'index']);
     Route::get('/sertifikat/tambah/digital-marketing/{id}', [SertifikatDigitalMarketingController::class, 'create']);
     Route::post('/tambah-sertifikat/digital-marketing', [SertifikatDigitalMarketingController::class, 'store']);

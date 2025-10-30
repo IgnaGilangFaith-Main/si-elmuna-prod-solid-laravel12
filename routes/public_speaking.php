@@ -1,14 +1,13 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PublicSpeakingController;
-
+use Illuminate\Support\Facades\Route;
 
 // ==================== PUBLIC SPEAKING ====================
 Route::get('/daftar_public_speaking', [PublicSpeakingController::class, 'create']);
 Route::post('/tambah-public-speaking', [PublicSpeakingController::class, 'store']);
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified', 'blocked'])->group(function () {
     // Data utama
     Route::get('/data_public_speaking', [PublicSpeakingController::class, 'index']);
     Route::get('/data_public_speaking/filter', [PublicSpeakingController::class, 'filterData']);

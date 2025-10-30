@@ -47,7 +47,7 @@
                     <input type="password" name="new_password_confirmation" id="new_password_confirmation"
                         class="form-control">
                 </div>
-                @can('admin-users')
+                @can('admin-user')
                     <header>
                         <h4>Permission</h4>
                         <p>

@@ -1,11 +1,10 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\KuitansiController;
-
+use Illuminate\Support\Facades\Route;
 
 // ==================== KUITANSI ====================
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified', 'blocked'])->group(function () {
     Route::get('/kuitansi', [KuitansiController::class, 'index']);
     Route::get('/kuitansi/tambah/{id}', [KuitansiController::class, 'create']);
     Route::post('/tambah-kuitansi', [KuitansiController::class, 'store']);

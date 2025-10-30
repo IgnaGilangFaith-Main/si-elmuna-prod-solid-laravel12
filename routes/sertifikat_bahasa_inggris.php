@@ -1,11 +1,10 @@
-<?php 
+<?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SertifikatBahasaInggrisController;
-
+use Illuminate\Support\Facades\Route;
 
 // ==================== SERTIFIKAT BAHASA INGGRIS ====================
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified', 'blocked'])->group(function () {
     Route::get('/sertifikat/bahasa-inggris', [SertifikatBahasaInggrisController::class, 'index']);
     Route::get('/sertifikat/tambah/bahasa-inggris/{id}', [SertifikatBahasaInggrisController::class, 'create']);
     Route::post('/tambah-sertifikat/bahasa-inggris', [SertifikatBahasaInggrisController::class, 'store']);

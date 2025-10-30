@@ -1,11 +1,10 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SertifikatPemrogramanController;
-
+use Illuminate\Support\Facades\Route;
 
 // ==================== SERTIFIKAT PEMROGRAMAN ====================
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified', 'blocked'])->group(function () {
     Route::get('/sertifikat/pemrograman', [SertifikatPemrogramanController::class, 'index']);
     Route::get('/sertifikat/tambah/pemrograman/{id}', [SertifikatPemrogramanController::class, 'create']);
     Route::post('/tambah-sertifikat/pemrograman', [SertifikatPemrogramanController::class, 'store']);

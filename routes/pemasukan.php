@@ -1,11 +1,10 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PemasukanController;
-
+use Illuminate\Support\Facades\Route;
 
 // ==================== PEMASUKAN ====================
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified', 'blocked'])->group(function () {
     Route::get('/pemasukan', [PemasukanController::class, 'index']);
     Route::get('/pemasukan/tambah', [PemasukanController::class, 'create']);
     Route::post('/tambah-pemasukan', [PemasukanController::class, 'store']);

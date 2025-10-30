@@ -1,14 +1,13 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MengemudiController;
-
+use Illuminate\Support\Facades\Route;
 
 // ==================== MENGEMUDI ====================
 Route::get('/daftar_mengemudi', [MengemudiController::class, 'create']);
 Route::post('/tambah-mengemudi', [MengemudiController::class, 'store']);
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified', 'blocked'])->group(function () {
     // Data utama
     Route::get('/data_mengemudi', [MengemudiController::class, 'index']);
     Route::get('/data_mengemudi/filter', [MengemudiController::class, 'filterData']);

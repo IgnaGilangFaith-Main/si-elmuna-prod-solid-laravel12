@@ -1,11 +1,10 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SertifikatMengemudiController;
-
+use Illuminate\Support\Facades\Route;
 
 // ==================== SERTIFIKAT MENGEMUDI ====================
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified', 'blocked'])->group(function () {
     Route::get('/sertifikat/mengemudi', [SertifikatMengemudiController::class, 'index']);
     Route::get('/sertifikat/tambah/mengemudi/{id}', [SertifikatMengemudiController::class, 'create']);
     Route::post('/tambah-sertifikat/mengemudi', [SertifikatMengemudiController::class, 'store']);

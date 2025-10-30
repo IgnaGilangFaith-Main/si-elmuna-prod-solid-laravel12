@@ -3,7 +3,6 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,9 +16,15 @@ class IsBlockedUser
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::user() && Auth::user()->is_blocked != null) {
+        if (Auth::check() && Auth::user()->blocked_at !== null) {
             Auth::logout();
-            throw new AuthorizationException;
+
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            sweetalert()->error('Akun Anda telah diblokir. Silakan hubungi administrator.');
+
+            return redirect('/login');
         }
 
         return $next($request);

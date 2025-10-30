@@ -1,11 +1,10 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PengeluaranController;
-
+use Illuminate\Support\Facades\Route;
 
 // ==================== PENGELUARAN ====================
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified', 'blocked'])->group(function () {
     Route::get('/pengeluaran', [PengeluaranController::class, 'index']);
     Route::get('/pengeluaran/tambah', [PengeluaranController::class, 'create']);
     Route::post('/tambah-pengeluaran', [PengeluaranController::class, 'store']);

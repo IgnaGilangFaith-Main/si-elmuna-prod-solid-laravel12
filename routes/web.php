@@ -18,11 +18,11 @@ use Illuminate\Support\Facades\Route;
 
 // ==================== AUTH & DASHBOARD ====================
 Route::get('/', [HomeController::class, 'index']);
-Route::get('/dashboard', [HomeController::class, 'adminDashboard'])->middleware('auth');
+Route::get('/dashboard', [HomeController::class, 'adminDashboard'])->middleware(['auth', 'verified', 'blocked']);
 
 Route::get('/login', [AuthController::class, 'login'])->name('login')->middleware('guest');
 Route::post('/login', [AuthController::class, 'authenticating'])->middleware('throttle:login');
-Route::get('/logout', [AuthController::class, 'logout'])->middleware('auth');
+Route::get('/logout', [AuthController::class, 'logout'])->middleware(['auth', 'verified', 'blocked']);
 
 // ==================== MODUL KURSUS ====================
 require __DIR__.'/bahasa_inggris.php';
@@ -40,7 +40,7 @@ require __DIR__.'/pengeluaran.php';
 require __DIR__.'/kuitansi.php';
 
 // ==================== MODUL LAPORAN ====================
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified', 'blocked'])->group(function () {
     Route::get('/laporan', [LaporanController::class, 'index']);
     Route::post('/laporan/export', [LaporanController::class, 'export']);
 });
