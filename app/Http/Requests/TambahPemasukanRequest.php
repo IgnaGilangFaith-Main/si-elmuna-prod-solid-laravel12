@@ -1,0 +1,40 @@
+<?php
+
+namespace App\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class TambahPemasukanRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
+    public function rules(): array
+    {
+        return [
+            'ket_pemasukan' => 'required',
+            'jumlah_pemasukan' => 'required',
+            'created_at' => 'required|date'
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'ket_pemasukan.required' => 'Keterangan Pemasukan wajib diisi!',
+            'jumlah_pemasukan.required' => 'Jumlah Pemasukan wajib diisi!',
+            'created_at.required' => 'Tanggal Pemasukan wajib diisi!',
+            'created_at.date' => 'Tanggal Pemasukan tidak valid!',
+        ];
+    }
+}
