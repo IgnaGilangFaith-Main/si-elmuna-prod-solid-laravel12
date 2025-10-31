@@ -7,6 +7,7 @@ use App\Http\Requests\TambahPengeluaranRequest;
 use App\Models\Keluar;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -147,18 +148,25 @@ class PengeluaranController extends Controller
      */
     public function index(Request $request)
     {
-        $tanggal = $request->filter_tanggal;
+        $user = Auth::user();
 
-        $data = $this->getFilteredData($tanggal, true);
-        /** with pagination */
-        $total = $this->calculateTotal($tanggal);
-        /** total berdasarkan filter date range */
+        if ($user->can('admin-keuangan')) {
+            $tanggal = $request->filter_tanggal;
 
-        return view('admin.pengeluaran.index', [
-            'sql' => $data,
-            'total' => $total,
-            'tanggal' => $tanggal,
-        ]);
+            $data = $this->getFilteredData($tanggal, true);
+            /** with pagination */
+            $total = $this->calculateTotal($tanggal);
+            /** total berdasarkan filter date range */
+
+            return view('admin.pengeluaran.index', [
+                'sql' => $data,
+                'total' => $total,
+                'tanggal' => $tanggal,
+            ]);
+        } else {
+            return abort(403);
+        }
+
     }
 
     /**
@@ -166,7 +174,14 @@ class PengeluaranController extends Controller
      */
     public function create()
     {
-        return view('admin.pengeluaran.tambah-pengeluaran');
+        $user = Auth::user();
+
+        if ($user->can('admin-keuangan')) {
+            return view('admin.pengeluaran.tambah-pengeluaran');
+        } else {
+            return abort(403);
+        }
+
     }
 
     /**
@@ -174,17 +189,24 @@ class PengeluaranController extends Controller
      */
     public function store(TambahPengeluaranRequest $request)
     {
-        $validated = $request->validated();
+        $user = Auth::user();
 
-        if (isset($validated['created_at'])) {
-            $validated['created_at'] = Carbon::parse($validated['created_at']);
+        if ($user->can('admin-keuangan')) {
+            $validated = $request->validated();
+
+            if (isset($validated['created_at'])) {
+                $validated['created_at'] = Carbon::parse($validated['created_at']);
+            }
+
+            Keluar::create($validated);
+
+            sweetalert()->success('Tambah Data Berhasil!');
+
+            return redirect('/pengeluaran');
+        } else {
+            return abort(403);
         }
 
-        Keluar::create($validated);
-
-        sweetalert()->success('Tambah Data Berhasil!');
-
-        return redirect('/pengeluaran');
     }
 
     /**
@@ -192,9 +214,16 @@ class PengeluaranController extends Controller
      */
     public function edit($id)
     {
-        $pengeluaran = Keluar::findOrFail($id);
+        $user = Auth::user();
 
-        return view('admin.pengeluaran.edit-pengeluaran', ['data' => $pengeluaran]);
+        if ($user->can('admin-keuangan')) {
+            $pengeluaran = Keluar::findOrFail($id);
+
+            return view('admin.pengeluaran.edit-pengeluaran', ['data' => $pengeluaran]);
+        } else {
+            return abort(403);
+        }
+
     }
 
     /**
@@ -202,18 +231,25 @@ class PengeluaranController extends Controller
      */
     public function update($id, EditKeluarRequest $request)
     {
-        $validated = $request->validated();
+        $user = Auth::user();
 
-        if (isset($validated['created_at'])) {
-            $validated['created_at'] = Carbon::parse($validated['created_at']);
+        if ($user->can('admin-keuangan')) {
+            $validated = $request->validated();
+
+            if (isset($validated['created_at'])) {
+                $validated['created_at'] = Carbon::parse($validated['created_at']);
+            }
+
+            $pengeluaran = Keluar::findOrFail($id);
+            $pengeluaran->update($validated);
+
+            sweetalert()->success('Update Data Berhasil!');
+
+            return redirect('/pengeluaran');
+        } else {
+            return abort(403);
         }
 
-        $pengeluaran = Keluar::findOrFail($id);
-        $pengeluaran->update($validated);
-
-        sweetalert()->success('Update Data Berhasil!');
-
-        return redirect('/pengeluaran');
     }
 
     /**
@@ -221,9 +257,16 @@ class PengeluaranController extends Controller
      */
     public function delete($id)
     {
-        $pengeluaran = Keluar::findOrFail($id);
+        $user = Auth::user();
 
-        return view('admin.pengeluaran.hapus-pengeluaran', ['data' => $pengeluaran]);
+        if ($user->can('admin-keuangan')) {
+            $pengeluaran = Keluar::findOrFail($id);
+
+            return view('admin.pengeluaran.hapus-pengeluaran', ['data' => $pengeluaran]);
+        } else {
+            return abort(403);
+        }
+
     }
 
     /**
@@ -231,12 +274,19 @@ class PengeluaranController extends Controller
      */
     public function destroy($id)
     {
-        $pengeluaran = Keluar::findOrFail($id);
-        $pengeluaran->delete();
+        $user = Auth::user();
 
-        sweetalert()->success('Hapus Data Berhasil!');
+        if ($user->can('admin-keuangan')) {
+            $pengeluaran = Keluar::findOrFail($id);
+            $pengeluaran->delete();
 
-        return redirect('/pengeluaran');
+            sweetalert()->success('Hapus Data Berhasil!');
+
+            return redirect('/pengeluaran');
+        } else {
+            return abort(403);
+        }
+
     }
 
     /**
@@ -244,9 +294,16 @@ class PengeluaranController extends Controller
      */
     public function deletedPengeluaran()
     {
-        $data = Keluar::onlyTrashed()->latest()->paginate(20);
+        $user = Auth::user();
 
-        return view('admin.pengeluaran.data-terhapus', ['sql' => $data]);
+        if ($user->can('admin-keuangan')) {
+            $data = Keluar::onlyTrashed()->latest()->paginate(20);
+
+            return view('admin.pengeluaran.data-terhapus', ['sql' => $data]);
+        } else {
+            return abort(403);
+        }
+
     }
 
     /**
@@ -254,10 +311,17 @@ class PengeluaranController extends Controller
      */
     public function restoreData($id)
     {
-        Keluar::withTrashed()->where('id', $id)->restore();
-        sweetalert()->success('Restore Data Berhasil!');
+        $user = Auth::user();
 
-        return redirect('/pengeluaran');
+        if ($user->can('admin-keuangan')) {
+            Keluar::withTrashed()->where('id', $id)->restore();
+            sweetalert()->success('Restore Data Berhasil!');
+
+            return redirect('/pengeluaran');
+        } else {
+            return abort(403);
+        }
+
     }
 
     /**
@@ -265,9 +329,16 @@ class PengeluaranController extends Controller
      */
     public function deletePermanen($id)
     {
-        $pengeluaran = Keluar::withTrashed()->findOrFail($id);
+        $user = Auth::user();
 
-        return view('admin.pengeluaran.hapus_permanen', ['data' => $pengeluaran]);
+        if ($user->can('admin-keuangan')) {
+            $pengeluaran = Keluar::withTrashed()->findOrFail($id);
+
+            return view('admin.pengeluaran.hapus_permanen', ['data' => $pengeluaran]);
+        } else {
+            return abort(403);
+        }
+
     }
 
     /**
@@ -275,10 +346,17 @@ class PengeluaranController extends Controller
      */
     public function forceDelete($id)
     {
-        Keluar::withTrashed()->findOrFail($id)->forceDelete();
-        sweetalert()->success('Berhasil Hapus Data Secara Permanen!');
+        $user = Auth::user();
 
-        return redirect('/pengeluaran/restore');
+        if ($user->can('admin-keuangan')) {
+            Keluar::withTrashed()->findOrFail($id)->forceDelete();
+            sweetalert()->success('Berhasil Hapus Data Secara Permanen!');
+
+            return redirect('/pengeluaran/restore');
+        } else {
+            return abort(403);
+        }
+
     }
 
     /**
@@ -286,29 +364,36 @@ class PengeluaranController extends Controller
      */
     public function export(Request $request)
     {
-        $ekspor = $request->ekspor;
+        $user = Auth::user();
 
-        $data = $this->getFilteredData($ekspor, false);
-        $total = $this->calculateTotal($ekspor);
-        /** total berdasarkan filter date range */
-        $filter = $this->getFilterLabel($ekspor);
+        if ($user->can('admin-keuangan')) {
+            $ekspor = $request->ekspor;
 
-        $spreadsheet = new Spreadsheet;
-        $filename = 'Laporan Pengeluaran '.$filter.'.xlsx';
-        $sheet = $spreadsheet->getActiveSheet();
+            $data = $this->getFilteredData($ekspor, false);
+            $total = $this->calculateTotal($ekspor);
+            /** total berdasarkan filter date range */
+            $filter = $this->getFilterLabel($ekspor);
 
-        // Set headers
-        $this->setExportHeaders($sheet);
+            $spreadsheet = new Spreadsheet;
+            $filename = 'Laporan Pengeluaran '.$filter.'.xlsx';
+            $sheet = $spreadsheet->getActiveSheet();
 
-        // Fill data
-        $this->fillExportData($sheet, $data, $total);
+            // Set headers
+            $this->setExportHeaders($sheet);
 
-        $writer = new Xlsx($spreadsheet);
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="'.$filename.'"');
-        header('Cache-Control: max-age=0');
+            // Fill data
+            $this->fillExportData($sheet, $data, $total);
 
-        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
-        $writer->save('php://output');
+            $writer = new Xlsx($spreadsheet);
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            header('Content-Disposition: attachment;filename="'.$filename.'"');
+            header('Cache-Control: max-age=0');
+
+            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
+            $writer->save('php://output');
+        } else {
+            return abort(403);
+        }
+
     }
 }

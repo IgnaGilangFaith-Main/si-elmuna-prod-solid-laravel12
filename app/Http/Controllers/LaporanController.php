@@ -6,6 +6,7 @@ use App\Models\Keluar;
 use App\Models\Masuk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -177,19 +178,26 @@ class LaporanController extends Controller
      */
     public function index(Request $request)
     {
-        $tanggal = $request->filter_tanggal;
+        $user = Auth::user();
 
-        [$masukData, $keluarData] = $this->getFilteredData($tanggal);
-        [$totalMasuk, $totalKeluar, $total] = $this->calculateTotals($masukData, $keluarData);
+        if ($user->can('admin-keuangan')) {
+            $tanggal = $request->filter_tanggal;
 
-        return view('admin.laporan.index', [
-            'masuk' => $masukData,
-            'keluar' => $keluarData,
-            'totalMasuk' => $totalMasuk,
-            'totalKeluar' => $totalKeluar,
-            'total' => $total,
-            'tanggal' => $tanggal,
-        ]);
+            [$masukData, $keluarData] = $this->getFilteredData($tanggal);
+            [$totalMasuk, $totalKeluar, $total] = $this->calculateTotals($masukData, $keluarData);
+
+            return view('admin.laporan.index', [
+                'masuk' => $masukData,
+                'keluar' => $keluarData,
+                'totalMasuk' => $totalMasuk,
+                'totalKeluar' => $totalKeluar,
+                'total' => $total,
+                'tanggal' => $tanggal,
+            ]);
+        } else {
+            return abort(403);
+        }
+
     }
 
     /**
@@ -197,28 +205,35 @@ class LaporanController extends Controller
      */
     public function export(Request $request)
     {
-        $ekspor = $request->ekspor;
+        $user = Auth::user();
 
-        [$masukData, $keluarData] = $this->getFilteredData($ekspor);
-        [$totalMasuk, $totalKeluar, $total] = $this->calculateTotals($masukData, $keluarData);
-        $filter = $this->getFilterLabel($ekspor);
+        if ($user->can('admin-keuangan')) {
+            $ekspor = $request->ekspor;
 
-        $spreadsheet = new Spreadsheet;
-        $filename = 'Rekap Pendapatan '.$filter.'.xlsx';
-        $sheet = $spreadsheet->getActiveSheet();
+            [$masukData, $keluarData] = $this->getFilteredData($ekspor);
+            [$totalMasuk, $totalKeluar, $total] = $this->calculateTotals($masukData, $keluarData);
+            $filter = $this->getFilterLabel($ekspor);
 
-        /** Set headers */
-        $this->setExportHeaders($sheet);
+            $spreadsheet = new Spreadsheet;
+            $filename = 'Rekap Pendapatan '.$filter.'.xlsx';
+            $sheet = $spreadsheet->getActiveSheet();
 
-        /** Fill data */
-        $this->fillExportData($sheet, $masukData, $keluarData, [$totalMasuk, $totalKeluar, $total]);
+            /** Set headers */
+            $this->setExportHeaders($sheet);
 
-        $writer = new Xlsx($spreadsheet);
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="'.$filename.'"');
-        header('Cache-Control: max-age=0');
+            /** Fill data */
+            $this->fillExportData($sheet, $masukData, $keluarData, [$totalMasuk, $totalKeluar, $total]);
 
-        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
-        $writer->save('php://output');
+            $writer = new Xlsx($spreadsheet);
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            header('Content-Disposition: attachment;filename="'.$filename.'"');
+            header('Cache-Control: max-age=0');
+
+            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
+            $writer->save('php://output');
+        } else {
+            return abort(403);
+        }
+
     }
 }
