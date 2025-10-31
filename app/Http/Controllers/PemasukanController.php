@@ -7,6 +7,7 @@ use App\Http\Requests\TambahPemasukanRequest;
 use App\Models\Masuk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -147,18 +148,23 @@ class PemasukanController extends Controller
      */
     public function index(Request $request)
     {
+        $user = Auth::user();
         $tanggal = $request->filter_tanggal;
 
         $data = $this->getFilteredData($tanggal, true);
         /** with pagination */
         $total = $this->calculateTotal($tanggal);
         /** total berdasarkan filter date range */
+        if ($user->can('admin-keuangan')) {
+            return view('admin.pemasukan.index', [
+                'sql' => $data,
+                'total' => $total,
+                'tanggal' => $tanggal,
+            ]);
+        } else {
+            return abort(403);
+        }
 
-        return view('admin.pemasukan.index', [
-            'sql' => $data,
-            'total' => $total,
-            'tanggal' => $tanggal,
-        ]);
     }
 
     /**
@@ -166,7 +172,12 @@ class PemasukanController extends Controller
      */
     public function create()
     {
-        return view('admin.pemasukan.tambah-pemasukan');
+        $user = Auth::user();
+        if ($user->can('admin-keuangan')) {
+            return view('admin.pemasukan.tambah-pemasukan');
+        } else {
+            return abort(403);
+        }
     }
 
     /**
@@ -174,17 +185,23 @@ class PemasukanController extends Controller
      */
     public function store(TambahPemasukanRequest $request)
     {
-        $validated = $request->validated();
+        $user = Auth::user();
+        if ($user->can('admin-keuangan')) {
+            $validated = $request->validated();
 
-        if (isset($validated['created_at'])) {
-            $validated['created_at'] = Carbon::parse($validated['created_at']);
+            if (isset($validated['created_at'])) {
+                $validated['created_at'] = Carbon::parse($validated['created_at']);
+            }
+
+            Masuk::create($validated);
+
+            sweetalert()->success('Tambah Data Berhasil!');
+
+            return redirect('/pemasukan');
+        } else {
+            return abort(403);
         }
 
-        Masuk::create($validated);
-
-        sweetalert()->success('Tambah Data Berhasil!');
-
-        return redirect('/pemasukan');
     }
 
     /**
@@ -192,9 +209,15 @@ class PemasukanController extends Controller
      */
     public function edit($id)
     {
-        $pemasukan = Masuk::findOrFail($id);
+        $user = Auth::user();
 
-        return view('admin.pemasukan.edit-pemasukan', ['data' => $pemasukan]);
+        if ($user->can('admin-keuangan')) {
+            $pemasukan = Masuk::findOrFail($id);
+
+            return view('admin.pemasukan.edit-pemasukan', ['data' => $pemasukan]);
+        } else {
+            return abort(403);
+        }
     }
 
     /**
@@ -202,18 +225,25 @@ class PemasukanController extends Controller
      */
     public function update($id, EditMasukRequest $request)
     {
-        $validated = $request->validated();
+        $user = Auth::user();
 
-        if (isset($validated['created_at'])) {
-            $validated['created_at'] = Carbon::parse($validated['created_at']);
+        if ($user->can('admin-keuangan')) {
+            $validated = $request->validated();
+
+            if (isset($validated['created_at'])) {
+                $validated['created_at'] = Carbon::parse($validated['created_at']);
+            }
+
+            $pemasukan = Masuk::findOrFail($id);
+            $pemasukan->update($validated);
+
+            sweetalert()->success('Update Data Berhasil!');
+
+            return redirect('/pemasukan');
+        } else {
+            return abort(403);
         }
 
-        $pemasukan = Masuk::findOrFail($id);
-        $pemasukan->update($validated);
-
-        sweetalert()->success('Update Data Berhasil!');
-
-        return redirect('/pemasukan');
     }
 
     /**
@@ -221,9 +251,16 @@ class PemasukanController extends Controller
      */
     public function delete($id)
     {
-        $pemasukan = Masuk::findOrFail($id);
+        $user = Auth::user();
 
-        return view('admin.pemasukan.hapus-pemasukan', ['data' => $pemasukan]);
+        if ($user->can('admin-keuangan')) {
+            $pemasukan = Masuk::findOrFail($id);
+
+            return view('admin.pemasukan.hapus-pemasukan', ['data' => $pemasukan]);
+        } else {
+            return abort(403);
+        }
+
     }
 
     /**
@@ -231,12 +268,19 @@ class PemasukanController extends Controller
      */
     public function destroy($id)
     {
-        $pemasukan = Masuk::findOrFail($id);
-        $pemasukan->delete();
+        $user = Auth::user();
 
-        sweetalert()->success('Hapus Data Berhasil!');
+        if ($user->can('admin-keuangan')) {
+            $pemasukan = Masuk::findOrFail($id);
+            $pemasukan->delete();
 
-        return redirect('/pemasukan');
+            sweetalert()->success('Hapus Data Berhasil!');
+
+            return redirect('/pemasukan');
+        } else {
+            return abort(403);
+        }
+
     }
 
     /**
@@ -244,9 +288,16 @@ class PemasukanController extends Controller
      */
     public function deletedPemasukan()
     {
-        $data = Masuk::onlyTrashed()->latest()->paginate(20);
+        $user = Auth::user();
 
-        return view('admin.pemasukan.data-terhapus', ['sql' => $data]);
+        if ($user->can('admin-keuangan')) {
+            $data = Masuk::onlyTrashed()->latest()->paginate(20);
+
+            return view('admin.pemasukan.data-terhapus', ['sql' => $data]);
+        } else {
+            return abort(403);
+        }
+
     }
 
     /**
@@ -254,10 +305,17 @@ class PemasukanController extends Controller
      */
     public function restoreData($id)
     {
-        Masuk::withTrashed()->where('id', $id)->restore();
-        sweetalert()->success('Restore Data Berhasil!');
+        $user = Auth::user();
 
-        return redirect('/pemasukan');
+        if ($user->can('admin-keuangan')) {
+            Masuk::withTrashed()->where('id', $id)->restore();
+            sweetalert()->success('Restore Data Berhasil!');
+
+            return redirect('/pemasukan');
+        } else {
+            return abort(403);
+        }
+
     }
 
     /**
@@ -265,9 +323,16 @@ class PemasukanController extends Controller
      */
     public function deletePermanen($id)
     {
-        $pemasukan = Masuk::withTrashed()->findOrFail($id);
+        $user = Auth::user();
 
-        return view('admin.pemasukan.hapus_permanen', ['data' => $pemasukan]);
+        if ($user->can('admin-keuangan')) {
+            $pemasukan = Masuk::withTrashed()->findOrFail($id);
+
+            return view('admin.pemasukan.hapus_permanen', ['data' => $pemasukan]);
+        } else {
+            return abort(403);
+        }
+
     }
 
     /**
@@ -275,10 +340,17 @@ class PemasukanController extends Controller
      */
     public function forceDelete($id)
     {
-        Masuk::withTrashed()->findOrFail($id)->forceDelete();
-        sweetalert()->success('Berhasil Menghapus Data Secara Permanen!');
+        $user = Auth::user();
 
-        return redirect('/pemasukan/restore');
+        if ($user->can('admin-keuangan')) {
+            Masuk::withTrashed()->findOrFail($id)->forceDelete();
+            sweetalert()->success('Berhasil Menghapus Data Secara Permanen!');
+
+            return redirect('/pemasukan/restore');
+        } else {
+            return abort(403);
+        }
+
     }
 
     /**
@@ -286,29 +358,36 @@ class PemasukanController extends Controller
      */
     public function export(Request $request)
     {
-        $ekspor = $request->ekspor;
+        $user = Auth::user();
 
-        $data = $this->getFilteredData($ekspor, false);
-        $total = $this->calculateTotal($ekspor);
-        /** total berdasarkan filter date range */
-        $filter = $this->getFilterLabel($ekspor);
+        if ($user->can('admin-keuangan')) {
+            $ekspor = $request->ekspor;
 
-        $spreadsheet = new Spreadsheet;
-        $filename = 'Laporan Pemasukan '.$filter.'.xlsx';
-        $sheet = $spreadsheet->getActiveSheet();
+            $data = $this->getFilteredData($ekspor, false);
+            $total = $this->calculateTotal($ekspor);
+            /** total berdasarkan filter date range */
+            $filter = $this->getFilterLabel($ekspor);
 
-        /** Set headers */
-        $this->setExportHeaders($sheet);
+            $spreadsheet = new Spreadsheet;
+            $filename = 'Laporan Pemasukan '.$filter.'.xlsx';
+            $sheet = $spreadsheet->getActiveSheet();
 
-        /** Fill data */
-        $this->fillExportData($sheet, $data, $total);
+            /** Set headers */
+            $this->setExportHeaders($sheet);
 
-        $writer = new Xlsx($spreadsheet);
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="'.$filename.'"');
-        header('Cache-Control: max-age=0');
+            /** Fill data */
+            $this->fillExportData($sheet, $data, $total);
 
-        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
-        $writer->save('php://output');
+            $writer = new Xlsx($spreadsheet);
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            header('Content-Disposition: attachment;filename="'.$filename.'"');
+            header('Cache-Control: max-age=0');
+
+            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
+            $writer->save('php://output');
+        } else {
+            return abort(403);
+        }
+
     }
 }

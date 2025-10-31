@@ -23,7 +23,7 @@
     <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
         <!-- Navbar Brand-->
         <a class="navbar-brand ps-3" href="{{ url('/dashboard') }}"><img src="{{ asset('asset/img/icon1.png') }}"
-                alt="Logo" width="40" height="40"> {{ Auth::user()->name }}</a>
+                alt="Logo" width="40" height="40"> {{ optional(Auth::user())->name }}</a>
         <!-- Sidebar Toggle-->
         <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!">
             <i class='bx bx-menu'></i>
@@ -94,23 +94,26 @@
                             </nav>
                         </div>
 
-                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
-                            data-bs-target="#dataRekap" aria-expanded="false" aria-controls="dataRekap">
-                            <div class="sb-nav-link-icon"><i class='bx bxs-folder'></i></div>
-                            Rekapitulasi
-                            <div class="sb-sidenav-collapse-arrow">
-                                <i class='bx bxs-chevron-down'></i>
+                        @can('admin-keuangan')
+                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse"
+                                data-bs-target="#dataRekap" aria-expanded="false" aria-controls="dataRekap">
+                                <div class="sb-nav-link-icon"><i class='bx bxs-folder'></i></div>
+                                Rekapitulasi
+                                <div class="sb-sidenav-collapse-arrow">
+                                    <i class='bx bxs-chevron-down'></i>
+                                </div>
+                            </a>
+                            <div class="collapse" id="dataRekap" aria-labelledby="headingOne"
+                                data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="{{ url('/pemasukan') }}">Pemasukan</a>
+                                    <a class="nav-link" href="{{ url('/pengeluaran') }}">Pengeluaran</a>
+                                    <a class="nav-link" href="{{ url('/laporan') }}">Laporan</a>
+                                    <a href="{{ url('/kuitansi') }}" class="nav-link">Kuitansi</a>
+                                </nav>
                             </div>
-                        </a>
-                        <div class="collapse" id="dataRekap" aria-labelledby="headingOne"
-                            data-bs-parent="#sidenavAccordion">
-                            <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link" href="{{ url('/pemasukan') }}">Pemasukan</a>
-                                <a class="nav-link" href="{{ url('/pengeluaran') }}">Pengeluaran</a>
-                                <a class="nav-link" href="{{ url('/laporan') }}">Laporan</a>
-                                <a href="{{ url('/kuitansi') }}" class="nav-link">Kuitansi</a>
-                            </nav>
-                        </div>
+                        @endcan
+
                         <a href="#" class="nav-link collapsed" data-bs-toggle="collapse"
                             data-bs-target="#dataKaryawan" aria-expanded="false" aria-controls="dataKaryawan">
                             <div class="sb-nav-link-icon"><i class="bx bxs-folder"></i></div>
@@ -142,7 +145,7 @@
                 </div>
                 <div class="sb-sidenav-footer">
                     <div class="small">Login sebagai</div>
-                    {{ Auth::user()->name }}
+                    {{ optional(Auth::user())->name }}
                 </div>
             </nav>
         </div>
