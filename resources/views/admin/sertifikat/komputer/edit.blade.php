@@ -203,7 +203,8 @@
                                 <td>Tempat, Tanggal Lahir</td>
                                 <td> &nbsp;:&nbsp; </td>
                                 <td><input type="text" name="tempat_lahir" value="{{ $data->tempat_lahir }}">,
-                                    <input type="date" name="tanggal_lahir" value="{{ $data->tanggal_lahir }}"
+                                    <input type="date" name="tanggal_lahir"
+                                        value="{{ $data->tanggal_lahir->format('Y-m-d') }}"
                                         style="width: 135px !important;">
                                 </td>
                             </tr>
