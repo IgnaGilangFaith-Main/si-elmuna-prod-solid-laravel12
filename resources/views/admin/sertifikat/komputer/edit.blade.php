@@ -222,15 +222,15 @@
                                 diselenggarakan oleh </p>
                             <p>LKP ELMUNA dari tanggal
                                 @if ($data->tgl_mulai == !null)
-                                    <input type="date" name="tgl_mulai" id="" value="{{ $data->tgl_mulai }}"
-                                        style="width: 135px !important;">
+                                    <input type="date" name="tgl_mulai" id=""
+                                        value="{{ $data->tgl_mulai->format('Y-m-d') }}" style="width: 135px !important;">
                                 @else
                                     <input type="date" name="tgl_mulai" id="" style="">
                                 @endif
                                 sampai
                                 @if ($data->tgl_selesai == !null)
                                     <input type="date" name="tgl_selesai" id=""
-                                        value="{{ $data->tgl_selesai }}" style="width: 135px !important;">
+                                        value="{{ $data->tgl_selesai->format('Y-m-d') }}" style="width: 135px !important;">
                                 @else
                                     <input type="date" name="tgl_selesai" id="">
                                 @endif
@@ -391,7 +391,7 @@
                                             Kebumen, {{ now()->isoFormat('DD MMMM Y') }} <br />
                                             Bagian Akademik
                                         </p>
-                                        <img src="{{ asset('/asset/img/tanda_tangan-2.png') }}" alt=""
+                                        <img src="{{ asset('asset/img/tanda_tangan-2.png') }}" alt=""
                                             width="50%">
                                         <p>SITI SUGIHATI</p>
                                     </center>

@@ -392,7 +392,7 @@
                                             Kebumen, {{ now()->isoFormat('DD MMMM Y') }} <br />
                                             Bagian Akademik
                                         </p>
-                                        <img src="{{ asset('/asset/img/tanda_tangan-2.png') }}" alt=""
+                                        <img src="{{ asset('asset/img/tanda_tangan-2.png') }}" alt=""
                                             width="50%">
                                         <p>SITI SUGIHATI</p>
                                     </center>
