@@ -24,7 +24,7 @@ class TambahKaryawanRequest extends FormRequest
         return [
             'nama' => 'required',
             'jabatan' => 'required',
-            'foto_karyawan' => 'required|image|mimes:jpg,jpeg,png|max:10240',
+            'foto_karyawan' => 'required|image|mimes:jpg,jpeg,png|max:1024',
         ];
     }
 
@@ -36,7 +36,7 @@ class TambahKaryawanRequest extends FormRequest
             'foto_karyawan.required' => 'Tanda tangan harus diisi!',
             'foto_karyawan.image' => 'Tanda tangan harus berupa gambar!',
             'foto_karyawan.mimes' => 'Ekstensi yang diperbolehkan hanya untuk format jpeg, jpg, dan png!',
-            'foto_karyawan.max' => 'Ukuran gambar tidak boleh lebih dari :max MB!',
+            'foto_karyawan.max' => 'Ukuran gambar tidak boleh lebih dari 1 MB!',
 
         ];
     }

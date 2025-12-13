@@ -16,7 +16,7 @@ class KaryawanController extends Controller
      */
     public function index(Request $request)
     {
-        $cari = $request->cari;
+        $cari = $request->input('cari');
 
         /** Kolom-kolom yang bisa dicari */
         $kolomCari = ['nama', 'jabatan'];
@@ -30,7 +30,7 @@ class KaryawanController extends Controller
                 })
                 ->get();
         } else {
-            $data = Karyawan::orderBy('id', 'desc')->get();
+            $data = Karyawan::latest()->get();
         }
 
         return view('admin.karyawan.index', ['data' => $data]);
