@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>500 - Server Error</title>
+    <title>503 - Service Unavailable</title>
     <link rel="icon" href="{{ asset('asset/img/icon1.png') }}" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
@@ -14,11 +14,11 @@
 <body class="bg-dark d-flex align-items-center justify-content-center min-vh-100">
     <div class="p-5 m-5 text-center">
         <div class="card p-5 rounded-5">
-            <h1 class="display-1 fw-bold">500</h1>
-            <h4 class="display-6">Internal Server Error</h4>
+            <h1 class="display-1 fw-bold">503</h1>
+            <h4 class="display-6">Service Unavailable</h4>
             <hr>
             <p class="lead fw-normal">
-                Server Error!
+                The server is temporarily unavailable, often due to being too busy or undergoing maintenance.
             </p>
             <div>
                 <a href="{{ url('/') }}" class="btn btn-secondary rounded-5 px-5">Kembali ke halaman utama</a>
